@@ -1,0 +1,9 @@
+These are scripts that we use to manage our HID EdgePro devices.
+
+They are handy for automating things like locking/unlocking doors,
+automatically downloading events and automatically restoring 
+the door backup files (or custom backup files)
+
+--
+Aaron
+
