@@ -1,0 +1,6 @@
+# This file should be chmod 0700 
+# This file should be chown root:root
+# This file should exist as /etc/door_creds.txt
+#username="admin"
+username="user"
+password="yourHIDEdgeProPassword"

@@ -1,1 +1,6 @@
+# Cmnd alias specification
+Cmnd_Alias OPEN_DOOR = /usr/local/bin/door_helper.sh
+
+# Lets a particular user run the door commands without a password
+someusername ALL=(ALL) NOPASSWD: OPEN_DOOR
 
