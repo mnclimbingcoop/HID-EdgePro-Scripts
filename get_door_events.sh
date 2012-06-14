@@ -2,6 +2,13 @@
 
 now=`date +%Y%m%d-%H-%M-%S`
 
+install_path=`dirname ${0}`
+if [ "${install_path}" == "." ]; then
+	install_path=`pwd`
+fi
+
+pushd /var/spool/hid
+
 # Timout to try to download the events.csv file (in minutes)
 events_download_timeout=5
 
@@ -45,32 +52,35 @@ if [ "$password" != "" ]; then
 		--user=$username \
 		--password=$password "$url"
 	
-	echo "CREATE CSV RESULTS:"
-	cat $resultfile
+	#echo "CREATE CSV RESULTS:"
+	#cat $resultfile
 	
 	url="https://${hostname}${events_file}"
 	
 	tryagain=1
 	
+	echo -e -n "\nDownloading events.csv..."
 	while ((( $tryagain == 1 ))); do
 	
-		echo -e "\nDownloading events.csv..."
 		# Try to download the completed events file
-		wget --output-document="events_$now.csv" \
+		wget --output-document="events_${door}_${now}.csv" \
 			--quiet \
 			--server-response \
 			--no-check-certificate \
 			--user=$username \
 			--password=$password "$url"	2> $resultfile
 	
-		echo "DOWNLOAD CSV RESULTS:"
 		if (grep -q 'HTTP/1.0 404 Not Found' $resultfile); then
 			tryagain=1
-			echo "Not yet... trying in 2 seconds"
+			echo -n -e "Not yet.\n Trying in 2 seconds..."
 			sleep 2
 		else
+			echo "Done."
 			tryagain=0
 			cat $resultfile
+
+			# Uploading door events to server
+			${install_path}/upload_events.sh "events_${door}_${now}.csv" $door
 		fi
 		
 	done
@@ -78,5 +88,7 @@ if [ "$password" != "" ]; then
 else
 	echo "Unable to find password!"
 fi
+
+popd
 
 rm $resultfile
