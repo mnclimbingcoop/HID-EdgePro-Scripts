@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$USER" == "root" ]; then
-. /etc/door_creds.txt
+. /etc/hid-door-creds.conf
 else
 username=user
 fi

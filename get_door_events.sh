@@ -12,7 +12,7 @@ pushd /var/spool/hid
 # Timout to try to download the events.csv file (in minutes)
 events_download_timeout=5
 
-. /etc/door_creds.txt
+. /etc/hid-door-creds.conf
 
 resultfile=`mktemp`
 action="/cgi-bin/vertx_xml.cgi"
