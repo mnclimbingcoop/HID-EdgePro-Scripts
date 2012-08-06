@@ -3,7 +3,7 @@
 if [ "$USER" == "root" ]; then
 . /etc/hid-door-creds.conf
 else
-username=user
+	username=user
 fi
 
 resultfile=`mktemp`
@@ -65,11 +65,11 @@ if [ "$password" != "" ]; then
 	fi
 	echo "$descriptor $door Door" 
 
-	wget --output-document=$resultfile \
-		--quiet \
-		--no-check-certificate \
-		--user=$username \
-		--password=$password "$url"
+	curl --insecure \
+		--silent \
+		--user ${username}:${password} \
+		"${url}" > ${resultfile}
+
 fi
 
 rm $resultfile

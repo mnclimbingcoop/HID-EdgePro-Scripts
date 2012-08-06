@@ -7,6 +7,10 @@ if [ "${install_path}" == "." ]; then
 	install_path=`pwd`
 fi
 
+if [ ! -d /var/spool/hid ]; then
+	sudo mkdir -p /var/spool/hid
+fi
+
 pushd /var/spool/hid
 
 # Timout to try to download the events.csv file (in minutes)
@@ -46,11 +50,10 @@ if [ "$password" != "" ]; then
 	echo "$descriptor $door Door" 
 
 	# Send the command to create the events file
-	wget --output-document=$resultfile \
-		--quiet \
-		--no-check-certificate \
-		--user=$username \
-		--password=$password "$url"
+	curl --insecure \
+		--silent \
+		--user ${username}:${password} \
+		"${url}" > ${resultfile}
 	
 	#echo "CREATE CSV RESULTS:"
 	#cat $resultfile
@@ -63,14 +66,21 @@ if [ "$password" != "" ]; then
 	while ((( $tryagain == 1 ))); do
 	
 		# Try to download the completed events file
-		wget --output-document="events_${door}_${now}.csv" \
-			--quiet \
-			--server-response \
-			--no-check-certificate \
-			--user=$username \
-			--password=$password "$url"	2> $resultfile
+		curl --insecure \
+			--silent \
+			--output "events_${door}_${now}.csv" \
+			--write-out "HTTP_RESULT:%{http_code}" \
+			--user ${username}:${password} \
+			"${url}" > ${resultfile}
+
+		#wget --output-document="events_${door}_${now}.csv" \
+			#--quiet \
+			#--server-response \
+			#--no-check-certificate \
+			#--user=$username \
+			#--password=$password "$url"	2> $resultfile
 	
-		if (grep -q 'HTTP/1.0 404 Not Found' $resultfile); then
+		if (grep -q 'HTTP_RESULT:404' $resultfile); then
 			tryagain=1
 			echo -n -e "Not yet.\n Trying in 2 seconds..."
 			sleep 2

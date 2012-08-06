@@ -10,10 +10,10 @@ url="https://${host}${path}?secret=${secret}"
 
 # Get the backup file
 echo "Downloading XML backup file ..."
-wget --output-document="${output_xml}.download" \
-	--quiet \
-	--no-check-certificate \
-	"$url"
+curl --insecure \
+	--silent \
+	--user ${username}:${password} \
+	"${url}" > "${output_xml}.download"
 
 echo -n "Checking XML file for errors..."
 tidy -xml -o ${output_xml} ${output_xml}.download 2> backupxml.errors
